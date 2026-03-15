@@ -1,0 +1,3 @@
+/Users/roniheikkonen/Desktop/Projects/C/solarSystem/build/CMakeFiles/solarSystem.dir
+/Users/roniheikkonen/Desktop/Projects/C/solarSystem/build/CMakeFiles/edit_cache.dir
+/Users/roniheikkonen/Desktop/Projects/C/solarSystem/build/CMakeFiles/rebuild_cache.dir
