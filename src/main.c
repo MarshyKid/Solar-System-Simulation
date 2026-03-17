@@ -97,10 +97,9 @@ void wireframeMode(void) {
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 }
 
-void updateRenderList(RenderObject *renderList, Body *bodies, int objCount, Mesh *mesh) {
+void updateRenderList(RenderObject *renderList, Body *bodies, int objCount) {
     for (int i = 0; i < objCount; i++) {
         renderList[i] = (RenderObject) {
-            .mesh = mesh,
             .color = {
                 bodies[i].color[0] / 255.0,
                 bodies[i].color[1] / 255.0,
@@ -150,20 +149,37 @@ int main(void) {
     glEnable(GL_DEPTH_TEST);
 
     //physical objects
-    vec3 origin = {50.0f, -20.0f, -0.0f};
-    vec3 pos2 = {50 + 38.44f, -20.0f, -0.0f};
-    vec3 vel1 = {0.0f, 0.0f, 16.129f};
+    vec3 origin = {150.0f, 0.0f, -0.0f};
+    vec3 pos2 = {180.0f, 0.0f, -0.0f};
+    vec3 pos3 = {0.0f, 0.0f, 0.0f};
+    vec3 vel1 = {0.0f, 0.0f, 47.0f};
     vec3 vel2 = {0.0f, 0.0f, 0.0f};
+    vec3 vel3 = {0.0f, 0.0f, 58.0f};
     vec3 white = {205.0, 205.0, 205.0};
     vec3 green = {21.0, 119.0, 40.0};
+    vec3 orange = {255.0, 127.0, 0.0};
     Body bodies[] = {
         //pos, vel, radius, mass, color
-        createBody(pos2, vel1, moonRadius, 1.0f / 81.3, white),
-        createBody(origin, vel2, earthRadius, 1.0f, green),
+        createBody(pos3, vel2, earthRadius * 2, 33.0f, orange),
+        createBody(pos2, vel3, moonRadius, 1.0f / 81.3, white),
+        createBody(origin, vel1, earthRadius, 1.0f, green),
     };
 
-    int nObj = 2;
+    int nObj = 3;
+    //pos, color, scale
     RenderObject renderList[nObj];
+
+    float triangleVertices[] = {
+        -2.5f, -1.0f, 0.0f,
+        2.5f, -1.0f, 0.0f,
+        0.0f, 2.5f, 0.0f,
+    };
+
+    unsigned int triangleIndices[] = {
+        0, 1, 2,
+    };
+    
+    Mesh triangleMesh = meshCreate(triangleVertices, 9, triangleIndices, 3);
     
     while (!glfwWindowShouldClose(window)) {
         //update dt
@@ -175,6 +191,11 @@ int main(void) {
         processInput(window, &cam);
 
         //physics calc
+        //zero acceleration first
+        for (int i = 0; i < nObj; i++) {
+            zeroAcceleration(&bodies[i]);
+        }
+
         for (int i = 0; i < nObj; i++) {
             //update acceleration
             for (int j = i + 1; j < nObj; j++) {
@@ -185,8 +206,9 @@ int main(void) {
             update(&bodies[i], dt);
         }
         //render commands
-        updateRenderList(renderList, bodies, nObj, &sphereMesh);
-        renderScene(window, &cam, &shaderProgram, renderList, nObj);
+        updateRenderList(renderList, bodies, nObj);
+        //renderScene(window, &cam, &shaderProgram, renderList, nObj);
+        renderTriangle(window, &cam, &shaderProgram, &triangleMesh, renderList, nObj);
 
         //check & call events, swap buffers
         glfwPollEvents();

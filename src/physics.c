@@ -33,8 +33,11 @@ void updateAcceleration(Body *body1, Body *body2, float dt) {
     glm_vec3_normalize(dir);
     glm_vec3_scale(dir, a, dir);
 
-    glm_vec3_zero(body1->acceleration);
     glm_vec3_add(body1->acceleration, dir, body1->acceleration);
+}
+
+void zeroAcceleration(Body *body) {
+    glm_vec3_zero(body->acceleration);
 }
 
 void updatePos(Body *body, float dt) {

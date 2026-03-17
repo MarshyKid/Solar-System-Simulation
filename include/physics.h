@@ -19,6 +19,8 @@ Body createBody(vec3 pos, vec3 velocity, double radius, double mass, vec3 color)
 
 void updateAcceleration(Body *body1, Body *body2, float dt);
 
+void zeroAcceleration(Body *body);
+
 void update(Body *body, float dt);
 
 #endif

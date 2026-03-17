@@ -22,6 +22,16 @@ void cameraUpdateFront(Camera *cam) {
         cam->front[0] = cos(glm_rad(cam->yaw)) * cos(glm_rad(cam->pitch));
         cam->front[1] = sin(glm_rad(cam->pitch));
         cam->front[2] = sin(glm_rad(cam->yaw)) * cos(glm_rad(cam->pitch));
+
+        vec3 right;
+        glm_vec3_cross(cam->front, (vec3) {0.0f, 1.0f, 0.0f}, right);
+        glm_vec3_normalize(right);
+        vec3 up;
+        glm_vec3_cross(right, cam->front, up);
+        glm_vec3_normalize(up);
+        cam->up[0] = up[0];
+        cam->up[1] = up[1];
+        cam->up[2] = up[2];
         glm_vec3_normalize(cam->front);
 }
 
@@ -84,4 +94,5 @@ void cameraProcessMouse(Camera *cam, float dx, float dy, float sensitivity) {
         cam->pitch = -89.0f;
     }
     cam->yaw += sensitivity * dx;
+    cameraUpdateFront(cam);
 }

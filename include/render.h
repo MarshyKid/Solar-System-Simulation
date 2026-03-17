@@ -7,12 +7,13 @@
 #include <cglm/cglm.h>
 
 typedef struct RenderObject {
-    Mesh *mesh;
     vec3 pos;
     vec3 color;
     float scale;
 } RenderObject;
 
-void renderScene(GLFWwindow *window, Camera *cam, Shader *shaderProgram, RenderObject *renderObjects, int count);
+//void renderScene(GLFWwindow *window, Camera *cam, Shader *shaderProgram, RenderObject *renderObjects, int count);
+
+void renderTriangle(GLFWwindow *window, Camera *cam, Shader *shaderProgram, Mesh *mesh, RenderObject *renderList, int count);
 
 #endif
