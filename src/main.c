@@ -235,6 +235,8 @@ int main(void) {
             Shape gridShape = grid(bodies, nObj);
             Mesh gridMesh = meshCreate(gridShape.vertices, gridShape.vertexCount * gridShape.stride, gridShape.indices, gridShape.indexCount);
             renderGrid(window, &cam, &gridShader, &gridMesh);
+            free(gridShape.vertices);
+            free(gridShape.indices);
         }
 
         renderTriangle(window, &cam, &shaderProgram, &triangleMesh, renderList, nObj);

@@ -278,5 +278,7 @@ Shape grid(Body *bodies, int objCount) {
 
     };
 
+    free(gridPoints);
+
     return grid;
 }
