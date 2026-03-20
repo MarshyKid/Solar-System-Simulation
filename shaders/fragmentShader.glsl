@@ -5,7 +5,7 @@ out vec4 FragColor;
 in vec3 pos;
 
 uniform float aspect;
-uniform int count;
+uniform int objCount;
 uniform vec3 spheres[20];
 uniform float radiuses[20];
 uniform vec3 colors[20];
@@ -14,6 +14,7 @@ uniform vec3 cameraPos;
 uniform vec3 cameraForward;
 uniform vec3 cameraRight;
 uniform vec3 cameraUp;
+uniform float fov;
 
 const float maxT = 1e30;
 
@@ -39,13 +40,74 @@ float getT(vec3 rayOrigin, vec3 rayDir, vec3 spherePos, float radius) {
     return t;
 }
 
+float getPlaneT(vec3 rayOrigin, vec3 rayDir, float planeY) {
+    //line of ray = origin + rayDir * t
+    //if y value of line of ray = planeY, intersects
+    //origin.y + rayDir.y * t = planeY 
+    //-> t = (planeY - origin.y) / rayDir.y
+    float t = (planeY - rayOrigin.y) / rayDir.y;
+    if (t < 0.0) {
+        return maxT;
+    }
+    return t;
+}
+
+float height(float x, float z) {
+    float r = length(vec2(x, z));
+    return - 1.6 / sqrt(r * r + 0.2);
+}
+
+float getCurvedPlaneT(vec3 rayOrigin, vec3 rayDir, float planeY) {
+    //walk along ray and check if y at ray(t) >,= or < height(x, z)
+    float t = 0.0;
+    float inc = 0.05;
+    float maxDist = 100.0;
+
+    float prevT = 0.0;
+    float prevDiff = 1e9;
+
+    for (int i = 0; i < 4000; i++) {
+        vec3 p = rayOrigin + rayDir * t;
+        float surfaceY = planeY + height(p.x, p.z);
+        float diff = p.y - surfaceY;
+
+        if (diff <= 0.0 && prevDiff > 0.0) {
+            //binary search
+            float a = prevT;
+            float b = t;
+
+            for (int j = 0; j < 10; j++) {
+                float m = 0.5 * (a + b);
+                vec3 midPoint = rayOrigin + rayDir * m;
+                float midDiff = midPoint.y - surfaceY;
+
+                if (midDiff > 0.0) {
+                    a = m;
+                } else {
+                    b = m;
+                }
+            }
+             return 0.5 * (a + b);
+        }
+
+        prevDiff = diff;
+        t += inc;
+
+        if (t > maxDist) {
+            break;
+        }
+    }
+
+    return maxT;
+}
+
 void main() {
 
     float radius = 0.5f;
     //ray from camera
     //adjust x value based on aspect
     vec3 rayDir = normalize(
-        cameraForward + pos.x * cameraRight * aspect + pos.y * cameraUp
+        cameraForward + pos.x * cameraRight * aspect * tan(radians(fov) / 2) + pos.y * cameraUp * tan(radians(fov) / 2)
     );
     vec3 rayOrigin = cameraPos;
 
@@ -57,11 +119,34 @@ void main() {
 
     vec3 color = vec3(1.0, 1.0, 1.0);
     int sphereIndex = 0;
-    for (int i = 0; i < count; i++) {
+    int hitType = -1; //0: sphere, 1: plane
+    
+    //grid
+   //float planeT = getCurvedPlaneT(rayOrigin, rayDir, -2.0f);
+   //if (planeT < t && t > 0.0) {
+   //    hit = true;
+   //    hitType = 1;
+   //    color = vec3(1.0f, 1.0f, 1.0f);
+   //    isLightSource = false;
+   //    t = planeT;
+   //    vec3 hitPos = rayOrigin + rayDir * t;
+   //    float gridLineWidth = 0.05;
+   //    float distToLineX = abs(fract(hitPos.x));
+   //    float distToLineZ = abs(fract(hitPos.z));
+   //    if (distToLineX < gridLineWidth / 2.0 || distToLineZ < gridLineWidth / 2.0) {
+   //        lightScale = 1.0;
+   //    } else {
+   //        t = maxT;
+   //        lightScale = 0.0;
+   //    }
+   //}
+
+    for (int i = 0; i < objCount; i++) {
         float currT = getT(rayOrigin, rayDir, spheres[i], radiuses[i]);
         if (currT < t && t > 0.0) {
             hit = true;
             hitSphere = spheres[i];
+            hitType = 0;
             color = colors[i];
             t = currT;
             sphereIndex = i;
@@ -73,7 +158,10 @@ void main() {
         }
     }
 
-    if (hit) {
+    if (!hit) {
+        discard;
+    }
+    if (hit && hitType == 0) {
         vec3 hitPos = rayOrigin + rayDir * t;
         vec3 normal = normalize(hitPos - hitSphere);
 
@@ -81,7 +169,7 @@ void main() {
         rayOrigin = hitPos;
         rayDir = normalize(lightSource - hitPos);
         bool shadow = false;
-        for (int i = 1; i < count; i++) {
+        for (int i = 1; i < objCount; i++) {
             if (i != sphereIndex) {
                 float currShadowT = getT(rayOrigin, rayDir, spheres[i], radiuses[i]);
                 if (currShadowT > 0.0 && currShadowT < length(lightSource - hitPos)) {
@@ -95,6 +183,10 @@ void main() {
             lightScale = 0.0;
         }
         lightScale += 0.0; //ambient
+    }
+
+    //generate grid
+    if (hit && hitType == 1) {
     }
     if (isLightSource) {
         lightScale = 1.0;

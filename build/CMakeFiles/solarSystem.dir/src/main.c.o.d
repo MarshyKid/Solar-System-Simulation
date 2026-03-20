@@ -160,6 +160,6 @@ CMakeFiles/solarSystem.dir/src/main.c.o: \
   /Users/roniheikkonen/Desktop/Projects/C/solarSystem/include/stb_image.h \
   /Users/roniheikkonen/Desktop/Projects/C/solarSystem/include/mesh.h \
   /Users/roniheikkonen/Desktop/Projects/C/solarSystem/include/shape.h \
+  /Users/roniheikkonen/Desktop/Projects/C/solarSystem/include/physics.h \
   /Users/roniheikkonen/Desktop/Projects/C/solarSystem/include/camera.h \
-  /Users/roniheikkonen/Desktop/Projects/C/solarSystem/include/render.h \
-  /Users/roniheikkonen/Desktop/Projects/C/solarSystem/include/physics.h
+  /Users/roniheikkonen/Desktop/Projects/C/solarSystem/include/render.h

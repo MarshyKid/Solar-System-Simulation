@@ -13,7 +13,7 @@ typedef struct RenderObject {
 } RenderObject;
 
 //void renderScene(GLFWwindow *window, Camera *cam, Shader *shaderProgram, RenderObject *renderObjects, int count);
-
-void renderTriangle(GLFWwindow *window, Camera *cam, Shader *shaderProgram, Mesh *mesh, RenderObject *renderList, int count);
+void renderGrid(GLFWwindow *window, Camera *cam, Shader *shaderProgram, Mesh *mesh);
+void renderTriangle(GLFWwindow *window, Camera *cam, Shader *shaderProgram, Mesh *mesh, RenderObject *renderList, int objCount);
 
 #endif

@@ -1005,6 +1005,7 @@ CMakeFiles/solarSystem.dir/src/shape.c.o: /Users/roniheikkonen/Desktop/Projects/
   /Users/roniheikkonen/Desktop/Projects/C/solarSystem/include/cglm/vec3.h \
   /Users/roniheikkonen/Desktop/Projects/C/solarSystem/include/cglm/vec4-ext.h \
   /Users/roniheikkonen/Desktop/Projects/C/solarSystem/include/cglm/vec4.h \
+  /Users/roniheikkonen/Desktop/Projects/C/solarSystem/include/physics.h \
   /Users/roniheikkonen/Desktop/Projects/C/solarSystem/include/shape.h
 
 CMakeFiles/solarSystem.dir/src/stb_image.c.o: /Users/roniheikkonen/Desktop/Projects/C/solarSystem/src/stb_image.c \

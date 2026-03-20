@@ -23,6 +23,8 @@ float mouseX = 400;
 float mouseY = 300;
 int firstMouse = 1;
 
+int gridToggle = 0;
+
 //mouse callback to handle look around
 void mouse_callback(GLFWwindow *window, double xpos, double ypos) {
     //get camera
@@ -47,6 +49,13 @@ void mouse_callback(GLFWwindow *window, double xpos, double ypos) {
 void processInput(GLFWwindow *window, Camera *cam) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, 1);
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_G) == GLFW_PRESS) {
+        gridToggle = 1;
+    }
+    if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS) {
+        gridToggle = 0;
     }
     //handle movement
     const float cameraSpeed = 3.0f * dt;
@@ -138,12 +147,14 @@ int main(void) {
 
     //program object
     Shader shaderProgram = createShader("shaders/vertexShader.glsl", "shaders/fragmentShader.glsl");
+    Shader gridShader = createShader("shaders/gridVertexShader.glsl", "shaders/gridShader.glsl");
 
     Shape cubeShape = cube();
     Mesh cubeMesh = meshCreate(cubeShape.vertices, cubeShape.vertexCount * cubeShape.stride, cubeShape.indices, cubeShape.indexCount);
 
     Shape sphereShape = sphere();
     Mesh sphereMesh = meshCreate(sphereShape.vertices, sphereShape.vertexCount * sphereShape.stride, sphereShape.indices, sphereShape.indexCount);
+
 
     //wireframeMode(); //change primitive drawing to wireframe
     glEnable(GL_DEPTH_TEST);
@@ -154,18 +165,19 @@ int main(void) {
     vec3 pos3 = {0.0f, 0.0f, 0.0f};
     vec3 vel1 = {0.0f, 0.0f, 47.0f};
     vec3 vel2 = {0.0f, 0.0f, 0.0f};
-    vec3 vel3 = {0.0f, 0.0f, 58.0f};
+    vec3 vel3 = {0.0f, 0.0f, 60.0f};
     vec3 white = {205.0, 205.0, 205.0};
     vec3 green = {21.0, 119.0, 40.0};
     vec3 orange = {255.0, 127.0, 0.0};
     Body bodies[] = {
         //pos, vel, radius, mass, color
         createBody(pos3, vel2, earthRadius * 2, 33.0f, orange),
+        createBody((vec3){-60.0f, 0.0f, 0.0f}, (vec3){0.0f, 0.0f, -80.0f}, earthRadius * 0.5, 1.0f / 10.0, (vec3){200.0, 0.0, 0.0}),
         createBody(pos2, vel3, moonRadius, 1.0f / 81.3, white),
         createBody(origin, vel1, earthRadius, 1.0f, green),
     };
 
-    int nObj = 3;
+    int nObj = 4;
     //pos, color, scale
     RenderObject renderList[nObj];
 
@@ -187,6 +199,14 @@ int main(void) {
         dt = currFrame - prevFrame;
         prevFrame = currFrame;
 
+        //clear
+        glClearColor(0.00f, 0.00f, 0.00f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        //glDepthMask(GL_TRUE);
+        //glEnable(GL_DEPTH_TEST);
+        glDepthMask(GL_FALSE);
+        glDisable(GL_DEPTH_TEST);
+ 
         //input
         processInput(window, &cam);
 
@@ -205,9 +225,18 @@ int main(void) {
             
             update(&bodies[i], dt);
         }
+
         //render commands
         updateRenderList(renderList, bodies, nObj);
         //renderScene(window, &cam, &shaderProgram, renderList, nObj);
+        
+        //generate grid
+        if (gridToggle == 1) {
+            Shape gridShape = grid(bodies, nObj);
+            Mesh gridMesh = meshCreate(gridShape.vertices, gridShape.vertexCount * gridShape.stride, gridShape.indices, gridShape.indexCount);
+            renderGrid(window, &cam, &gridShader, &gridMesh);
+        }
+
         renderTriangle(window, &cam, &shaderProgram, &triangleMesh, renderList, nObj);
 
         //check & call events, swap buffers

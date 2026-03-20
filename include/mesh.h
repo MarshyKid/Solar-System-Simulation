@@ -15,4 +15,6 @@ Mesh meshCreate(float *vertices, unsigned int vertexCount, unsigned int *indices
 
 void meshDraw(Mesh *mesh);
 
+void meshDrawLines(Mesh *mesh);
+
 #endif

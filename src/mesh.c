@@ -45,3 +45,9 @@ void meshDraw(Mesh *mesh) {
     glDrawElements(GL_TRIANGLES, mesh->indexCount, GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
 }
+
+void meshDrawLines(Mesh *mesh) {
+    glBindVertexArray(mesh->VAO);
+    glDrawElements(GL_LINES, mesh->indexCount, GL_UNSIGNED_INT, 0);
+    glBindVertexArray(0);
+}

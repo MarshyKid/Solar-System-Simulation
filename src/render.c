@@ -76,11 +76,34 @@
 //        meshDraw(renderObjects[i].mesh);
 //    }
 //}
+void renderGrid(GLFWwindow *window, Camera *cam, Shader *shaderProgram, Mesh *mesh) {
+    use(*shaderProgram);
+    //matrix calc
+    mat4 view;
+    mat4 projection;
+    mat4 model;
 
-void renderTriangle(GLFWwindow *window, Camera *cam, Shader *shaderProgram, Mesh *mesh, RenderObject *renderList, int count) {
-    glClearColor(0.00f, 0.00f, 0.00f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    
+    glm_mat4_identity(view);
+    glm_mat4_identity(projection);
+    glm_mat4_identity(model);
+
+    //camera
+    cameraViewMat(cam, view);
+    int viewLoc = glGetUniformLocation(shaderProgram->id, "view");
+    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, (float *) view);
+
+    //fov
+    int vw, vh;
+    glfwGetWindowSize(window, &vw, &vh);
+    cameraProjMat(cam, (float)vw/(float)vh, projection);
+    int projectionLoc = glGetUniformLocation(shaderProgram->id, "projection");
+    glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, (float *) projection);
+
+    meshDraw(mesh);
+}
+void renderTriangle(GLFWwindow *window, Camera *cam, Shader *shaderProgram, Mesh *mesh, RenderObject *renderList, int objCount) {
+   
+    use(*shaderProgram);
     //aspect
     int vw, vh;
     glfwGetWindowSize(window, &vw, &vh);
@@ -104,12 +127,15 @@ void renderTriangle(GLFWwindow *window, Camera *cam, Shader *shaderProgram, Mesh
     int cameraUpLoc = glGetUniformLocation(shaderProgram->id, "cameraUp");
     glUniform3f(cameraUpLoc, cam->up[0], cam->up[1], cam->up[2]);
 
-    //add sphere info
-    float spheres[count * 3];
-    float radiuses[count];
-    float colors[count * 3];
+    int fovLoc = glGetUniformLocation(shaderProgram->id, "fov");
+    glUniform1f(fovLoc, cam->fov);
 
-    for (int i = 0; i < count; i++) {
+    //add sphere info
+    float spheres[objCount * 3];
+    float radiuses[objCount];
+    float colors[(objCount) * 3];
+
+    for (int i = 0; i < objCount; i++) {
         spheres[3*i] = renderList[i].pos[0];
         spheres[3*i + 1] = renderList[i].pos[1];
         spheres[3*i + 2] = renderList[i].pos[2];
@@ -122,17 +148,16 @@ void renderTriangle(GLFWwindow *window, Camera *cam, Shader *shaderProgram, Mesh
     }
 
     int spheresLoc = glGetUniformLocation(shaderProgram->id, "spheres");
-    glUniform3fv(spheresLoc, count, spheres);
+    glUniform3fv(spheresLoc, objCount, spheres);
 
     int radiusesLoc = glGetUniformLocation(shaderProgram->id, "radiuses");
-    glUniform1fv(radiusesLoc, count, radiuses);
+    glUniform1fv(radiusesLoc, objCount, radiuses);
 
     int colorsLoc = glGetUniformLocation(shaderProgram->id, "colors");
-    glUniform3fv(colorsLoc, count, colors);
+    glUniform3fv(colorsLoc, objCount, colors);
 
-    int countLoc = glGetUniformLocation(shaderProgram->id, "count");
-    glUniform1i(countLoc, count);
+    int countLoc = glGetUniformLocation(shaderProgram->id, "objCount");
+    glUniform1i(countLoc, objCount);
 
-    use(*shaderProgram);
     meshDraw(mesh);
 }
