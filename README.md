@@ -87,9 +87,7 @@ For every frame, the simulation first resets each body's accumulated acceleratio
 
 It then calculates the gravitational acceleration caused by every other body using:
 
-[
-a = \frac{Gm}{r^2}
-]
+$a = \frac{Gm}{r^2}$
 
 where:
 
@@ -101,9 +99,7 @@ The acceleration contributions from all other bodies are accumulated before velo
 
 The pairwise calculation currently has a time complexity of:
 
-[
-O(n^2)
-]
+$O(n^2)$
 
 This is appropriate for the small number of bodies used in the demonstration.
 
