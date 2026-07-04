@@ -6,9 +6,7 @@ The project simulates gravitational interactions between celestial bodies, rende
 
 > This project is a graphics and physics experiment, not an astronomically accurate solar-system model or a general-relativity solver.
 
-<!-- Replace this with your own recording -->
-
-![Solar System Simulation Demo](assets/demo.gif)
+(https://github.com/MarshyKid/Solar-System-Simulation/issues/1#issue-4809668843)
 
 ## Features
 
