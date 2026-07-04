@@ -46,10 +46,6 @@ For each pixel, the shader:
 5. Applies diffuse lighting from the central body.
 6. Casts a secondary ray to determine whether the point is in shadow.
 
-<!-- Add screenshot -->
-
-![Ray-Traced Bodies](assets/ray-tracing.png)
-
 ### Spacetime-Curvature Grid
 
 The optional grid is procedurally generated and deformed according to the positions and masses of the simulated bodies.
@@ -57,10 +53,6 @@ The optional grid is procedurally generated and deformed according to the positi
 Each body contributes to the vertical displacement of nearby grid points, creating a visual representation of a gravitational well.
 
 This grid is intended as an intuitive visual metaphor and does not implement Einstein's field equations.
-
-<!-- Add screenshot -->
-
-![Spacetime Grid](assets/spacetime-grid.png)
 
 ## Controls
 
